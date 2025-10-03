@@ -5,6 +5,13 @@ import ProductsList from './pages/ProductsList'
 import Cart from './pages/Cart'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
+import { Navigate } from "react-router-dom"
+
+function PrivateRoute({ children }) {
+  const isAdmin = localStorage.getItem("isAdmin") === "true"
+  return isAdmin ? children : <Navigate to="/admin-login" />
+}
+
 
 function App() {
   return (
@@ -15,8 +22,9 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/productos" element={<ProductsList />} />
           <Route path="/carrito" element={<Cart />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+             <Route path="/admin-login" element={<AdminLogin />} />
+
         </Routes>
       </main>
     </div>
