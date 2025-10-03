@@ -1,22 +1,36 @@
-import ProductCard from '../components/ProductCard'
+// src/pages/ProductsList.jsx
+import { useEffect, useState } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/config";
+import { useCart } from "../context/useCart";
+import ProductCard from "../components/ProductCard";
 
-const mockProducts = [
-  { id: 1, name: "Producto 1", price: 100 },
-  { id: 2, name: "Producto 2", price: 200 },
-  { id: 3, name: "Producto 3", price: 300 }
-]
+export default function ProductsList() {
+  const [products, setProducts] = useState([]);
+  const { addToCart } = useCart();
 
-function ProductsList() {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "cookies"));
+        const data = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setProducts(data);
+      } catch (error) {
+        console.error("Error al traer productos:", error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Productos</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {mockProducts.map((p) => (
-          <ProductCard key={p.id} product={p} />
-        ))}
-      </div>
+    <div className="grid grid-cols-2  md:grid-cols-3 lg:grid-cols-3  lg:gap-y-10 lg:gap-x-8 gap-2  sm:gap-y-3 md:m-1 sm:mx-4 justify-items-center lg:mx-12">
+      {products.map((product) => (
+        <ProductCard key={product.id} product={product} addToCart={addToCart} />
+      ))}
     </div>
-  )
+  );
 }
-
-export default ProductsList
