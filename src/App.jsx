@@ -6,6 +6,8 @@ import Cart from './pages/Cart'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import { Navigate } from "react-router-dom"
+import OrdersList from "./pages/OrdersList";
+import ManageCookies from "./pages/ManageCookies";
 
 function PrivateRoute({ children }) {
   const isAdmin = localStorage.getItem("isAdmin") === "true"
@@ -24,7 +26,22 @@ function App() {
           <Route path="/carrito" element={<Cart />} />
           <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
              <Route path="/admin-login" element={<AdminLogin />} />
-
+              <Route
+  path="/admin/orders"
+  element={
+    <PrivateRoute>
+      <OrdersList />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/admin/cookies"
+  element={
+    <PrivateRoute>
+      <ManageCookies />
+    </PrivateRoute>
+  }
+/>
         </Routes>
       </main>
     </div>

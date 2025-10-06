@@ -7,7 +7,7 @@ function Navbar() {
   const cartCount = items.reduce((acc, item) => acc + item.quantity, 0)
 
   return (
-    <nav className="bg-blue-600 text-white p-4 flex justify-between items-center">
+    <nav className="bg-yellow-900 text-white p-4 flex justify-between items-center">
       <div className="flex gap-4">
         <Link to="/" className="font-bold">Mi Tienda</Link>
         <Link to="/productos">Productos</Link>
