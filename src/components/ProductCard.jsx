@@ -1,8 +1,10 @@
-// src/components/ProductCard.jsx
 import { motion } from "framer-motion";
+import { useContext } from "react";
+import { CartContext } from "../context/CartContext";
 
-export default function ProductCard({ product, addToCart }) {
-  const { id, name, image, description, price } = product;
+export default function ProductCard({ product }) {
+  const { addToCart } = useContext(CartContext); // ahora lo usamos desde contexto
+  const { name, image, description, price } = product;
 
   return (
     <motion.div
@@ -31,6 +33,7 @@ export default function ProductCard({ product, addToCart }) {
           whileTap={{ scale: 0.95 }}
           className="font-poppins cursor-pointer bg-amber-900 text-white hover:bg-amber-950 mb-0.5 px-1.5 py-0.5 lg:px-3 lg:py-2 md:px-3 md:py-2 mt-1.5 md:mt-3 lg:mt-3 rounded-2xl text-xs lg:text-sm md:text-sm w-fit mx-auto"
           onClick={() => addToCart(product)}
+        
         >
           Añadir al carrito
         </motion.button>

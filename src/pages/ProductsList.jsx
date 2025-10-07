@@ -2,13 +2,15 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase/config";
-import { useCart } from "../context/useCart";
 import ProductCard from "../components/ProductCard";
+import Cart from "../components/Cart";
+import { useContext } from "react";
+import { CartContext } from "../context/CartContext";
+
 
 export default function ProductsList() {
   const [products, setProducts] = useState([]);
-  const { addToCart } = useCart();
-
+  const { cart, addToCart } = useContext(CartContext);
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -27,7 +29,10 @@ export default function ProductsList() {
   }, []);
 
   return (
+    
     <section  className="align-items-center pt-10 lg:pt-20 pb-4 lg:pb-16 px-6">
+     <div> <Cart isStickyCart={true} />
+</div> 
   <div className="max-w-6xl mx-auto text-center mb-7 lg:mb-13">
     <h2 className="text-3xl md:text-5xl lg:text-7xl font-pacifico text-orange-950 mb-2 lg:mb-5">Nuestras Cookies</h2>
     <p className="text-lg lg:text-xl font-poppins text-orange-950">Elegí tu promo en nuestro instagram</p>
