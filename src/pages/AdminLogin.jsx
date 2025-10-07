@@ -1,52 +1,119 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { auth } from "../firebase/config"
 
 function AdminLogin() {
-  const [usuario, setUsuario] = useState("")
+  const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault()
+    setLoading(true)
+    setError("")
 
-    // 👇 credenciales "fijas"
-    const ADMIN_USER = "admin"
-    const ADMIN_PASS = "1234"
+    try {
+      // 👇 Iniciar sesión con Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password)
+      const user = userCredential.user
 
-    if (usuario === ADMIN_USER && password === ADMIN_PASS) {
-      // Guardar sesión en localStorage
-      localStorage.setItem("isAdmin", "true")
-      navigate("/admin") // redirigir al panel
-    } else {
-      setError("Usuario o contraseña incorrectos")
+      // 👇 Verificar si el usuario es admin
+      const adminEmails = ["admin@tudominio.com", "oliviaiturrusgarai@iresm.edu.ar"]
+      
+      if (adminEmails.includes(user.email)) {
+        // Guardar información de sesión
+        localStorage.setItem("isAdmin", "true")
+        localStorage.setItem("adminEmail", user.email)
+        
+        navigate("/admin") // redirigir al panel
+      } else {
+        setError("No tienes permisos de administrador")
+        // Cerrar sesión si no es admin
+        await auth.signOut()
+        localStorage.removeItem("isAdmin")
+        localStorage.removeItem("adminEmail")
+      }
+
+    } catch (error) {
+      console.error("Error de autenticación:", error)
+      
+      // 👇 Manejar diferentes tipos de errores
+      switch (error.code) {
+        case "auth/invalid-email":
+          setError("El formato del email es inválido")
+          break
+        case "auth/user-disabled":
+          setError("Esta cuenta ha sido deshabilitada")
+          break
+        case "auth/user-not-found":
+          setError("No existe una cuenta con este email")
+          break
+        case "auth/wrong-password":
+          setError("Contraseña incorrecta")
+          break
+        case "auth/too-many-requests":
+          setError("Demasiados intentos fallidos. Intenta más tarde")
+          break
+        default:
+          setError("Error al iniciar sesión. Intenta nuevamente")
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
   return (
-    <div className="max-w-sm mx-auto border p-4 rounded shadow">
-      <h2 className="text-xl font-bold mb-2">Login Admin</h2>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Usuario"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full mb-2"
-        />
-        {error && <p className="text-red-500 mb-2">{error}</p>}
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login Administrativo</h2>
+      <form onSubmit={handleLogin} className="space-y-4">
+        <div>
+          <input
+            type="email"
+            placeholder="Email administrativo"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            disabled={loading}
+          />
+        </div>
+        <div>
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            required
+            disabled={loading}
+          />
+        </div>
+        
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600 text-sm">{error}</p>
+          </div>
+        )}
+        
         <button
           type="submit"
-          className="bg-blue-600 text-white w-full py-2 rounded hover:bg-blue-700"
+          disabled={loading}
+          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed transition duration-200"
         >
-          Ingresar
+          {loading ? (
+            <span className="flex items-center justify-center">
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Iniciando sesión...
+            </span>
+          ) : (
+            "Ingresar al Panel"
+          )}
         </button>
       </form>
     </div>

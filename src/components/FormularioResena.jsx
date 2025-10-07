@@ -46,7 +46,7 @@ function FormularioResena() {
     <div className="p-4">
       <button
         onClick={() => setMostrarFormulario(!mostrarFormulario)}
-        className="bg-amber-900 hover:bg-amber-950 font-poppins text-white px-4 py-2 rounded mb-4"
+        className="bg-yellow-950 text-sm sm:text-base hover:bg-amber-950 font-poppins text-white px-4 py-2 rounded-full mb-2 sm:mb-4"
       >
         {mostrarFormulario ? "Cancelar" : "Añadir reseña"}
       </button>

@@ -12,7 +12,7 @@ function App() {
   return (
     <>
     <Header/>
-    <main className="max-w-6xl mx-auto ">
+    <main className="max-w-6xl mx-auto text-center">
       <section className="pt-12 sm:pt-16 pb-6 px-4 sm:px-6">
   <div className="max-w-6xl mx-auto">
   <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 overflow-x-auto sm:overflow-visible px-4 sm:px-0 snap-x snap-mandatory scroll-smooth">
@@ -87,7 +87,7 @@ function App() {
 
 
  <section className='mt-9'>
-  <h3 className='text-2xl md:text-3xl lg:text-5xl font-pacifico font-bold text-orange-950 mb-8 ' >Reseñas de nuestros clientes</h3>
+  <h3 className='text-2xl md:text-3xl lg:text-5xl font-pacifico font-bold text-orange-950 mt-3 mb-2 sm:mt-20 sm:mb-8 ' >Reseñas de nuestros clientes</h3>
     
     <FormularioResena />
   <ResenasList/>
