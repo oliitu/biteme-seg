@@ -66,8 +66,8 @@ function AdminLogin() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white border border-gray-200 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login Administrativo</h2>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-amber-50 rounded-lg shadow-md">
+      <h2 className="text-2xl font-bold text-center mb-6 text-yellow-900">Logueate</h2>
       <form onSubmit={handleLogin} className="space-y-4">
         <div>
           <input
@@ -75,7 +75,7 @@ function AdminLogin() {
             placeholder="Email administrativo"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff84ad] focus:border-transparent"
             required
             disabled={loading}
           />
@@ -86,7 +86,7 @@ function AdminLogin() {
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#ff84ad] focus:border-transparent"
             required
             disabled={loading}
           />
@@ -101,7 +101,7 @@ function AdminLogin() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400 disabled:cursor-not-allowed transition duration-200"
+          className="w-full text-white py-2 px-4 rounded-md bg-[#ff84ad] hover:bg-[#ce5980] focus:outline-none focus:ring-2 focus:ring-[#ff84ad] focus:ring-offset-2 disabled:bg-gray-500 disabled:cursor-not-allowed transition duration-200"
         >
           {loading ? (
             <span className="flex items-center justify-center">

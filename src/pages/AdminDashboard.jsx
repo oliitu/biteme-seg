@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 border rounded-lg shadow bg-white">
+    <div className="max-w-md mx-auto mt-10 p-6 rounded-lg shadow bg-amber-50">
       {/* Header con información del usuario */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-bold mb-2 text-amber-900 font-poppins">
@@ -37,15 +37,15 @@ export default function AdminDashboard() {
       <div className="flex flex-col gap-4 mb-6">
         <button
           onClick={() => navigate("/admin/orders")}
-          className="bg-amber-700 hover:bg-amber-800 text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
+          className="bg-yellow-900 hover:bg-yellow-950 text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
         >
-          📦 Ver Pedidos
+          Ver Pedidos
         </button>
         <button
           onClick={() => navigate("/admin/cookies")}
-          className="bg-amber-500 hover:bg-amber-600 text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
+          className="bg-[#ff84ad] hover:bg-[#ce5980] text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
         >
-          🍪 Gestionar Cookies
+          Gestionar Cookies
         </button>
       </div>
 
@@ -53,9 +53,9 @@ export default function AdminDashboard() {
       <div className="border-t pt-4">
         <button
           onClick={handleLogout}
-          className="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 rounded-lg font-semibold transition duration-200"
+          className="w-full bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg font-semibold transition duration-200"
         >
-          🚪 Cerrar Sesión
+          Cerrar Sesión
         </button>
       </div>
     </div>

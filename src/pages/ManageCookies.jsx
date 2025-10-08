@@ -53,7 +53,7 @@ await updateDoc(ref, newCookie);
 } else {
 await addDoc(cookiesRef, { ...newCookie, price: Number(newCookie.price) });
 }
-setNewCookie({ name: "", description: "", price: "", imageUrl: "" });
+setNewCookie({ name: "", description: "", price: "", stock: "", imageUrl: "" });
 setEditing(null);
 const snapshot = await getDocs(cookiesRef);
 setCookies(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
@@ -72,7 +72,7 @@ await deleteDoc(doc(db, "cookies", id));
 setCookies(cookies.filter((c) => c.id !== id));
 };
 
-return ( <div className="max-w-2xl mx-auto mt-10 p-6 border rounded-lg shadow bg-white"> <h2 className="text-2xl font-bold mb-4 text-center text-amber-900 font-poppins">
+return ( <div className="max-w-2xl mx-auto mt-10 p-6 font-poppins rounded-lg shadow bg-amber-50"> <h2 className="text-2xl font-bold mb-4 text-center text-amber-900 font-poppins">
 Gestionar Cookies </h2>
 
   <form onSubmit={handleSubmit} className="space-y-3 mb-6">
@@ -99,6 +99,14 @@ Gestionar Cookies </h2>
       className="border p-2 w-full rounded"
       required
     />
+    <input
+      type="number"
+      placeholder="Stock"
+      value={newCookie.stock}
+      onChange={(e) => setNewCookie({ ...newCookie, stock: e.target.value })}
+      className="border p-2 w-full rounded"
+      required
+    />
     
     {/* Subida de imagen */}
     <input type="file" accept="image/*" onChange={handleImageUpload} className="border p-2 w-full rounded" />
@@ -109,7 +117,7 @@ Gestionar Cookies </h2>
 
     <button
       type="submit"
-      className="bg-amber-700 hover:bg-amber-800 text-white py-2 px-4 rounded w-full"
+      className="bg-yellow-900 hover:bg-yellow-950 text-white py-2 px-4 rounded w-full"
     >
       {editing ? "Actualizar" : "Agregar"} Cookie
     </button>
@@ -119,7 +127,7 @@ Gestionar Cookies </h2>
     {cookies.map((cookie) => (
       <div
         key={cookie.id}
-        className="border rounded p-3 flex justify-between items-center bg-amber-50"
+        className="border rounded p-3 flex justify-between items-center bg-amber-100"
       >
         <div className="flex items-center gap-3">
           {cookie.imageUrl && <img src={cookie.imageUrl} alt={cookie.name} className="w-12 h-12 rounded object-cover" />}
@@ -127,6 +135,7 @@ Gestionar Cookies </h2>
             <p className="font-bold">{cookie.name}</p>
             <p>${cookie.price}</p>
           </div>
+          <p>stock: {cookie.stock}</p>
         </div>
         <div className="flex gap-2">
           <button
