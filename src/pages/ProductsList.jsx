@@ -7,7 +7,7 @@ import Cart from "../components/Cart";
 import { CartContext } from "../context/CartContext";
 import ModalPedido from "../components/ModalPedido";
 import ModalWhatsApp from "../components/ModalWhatsApp";
-import FormularioResena from "../components/FormularioResena";
+import FormularioResena from "../components/DejaTuResena";
 import Toast from "../components/Toast";
 import { motion, AnimatePresence } from "framer-motion";
 

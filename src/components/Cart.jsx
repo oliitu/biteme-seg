@@ -99,7 +99,7 @@ export default function Cart({
                       <tr key={cookie.id} className="border-b border-yellow-900">
                         <td className="p-2">
                           <img
-                            src={`/img/${cookie.image}.png`}
+                            src={cookie.imageUrl}
                             alt={cookie.name}
                             className="w-10 mx-auto h-10 object-cover rounded"
                           />

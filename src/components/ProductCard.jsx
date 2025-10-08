@@ -4,7 +4,7 @@ import { CartContext } from "../context/CartContext";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext); // ahora lo usamos desde contexto
-  const { name, image, description, price } = product;
+  const { name, imageUrl, description, price } = product;
 
   return (
     <motion.div
@@ -13,12 +13,12 @@ export default function ProductCard({ product }) {
       className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg"
     >
       <div className="bg-radial from-amber-100 from-40% to-[#fff1bf] rounded-xl hover:drop-shadow-xl shadow py-2 md:py-6 md:px-4 lg:py-6 lg:px-4 text-center flex flex-col h-full">
-        <motion.img
-          whileHover={{ rotate: 40 }}
-          transition={{ duration: 0.3 }}
-          src={`/img/${image}.png`}
-          alt={name}
-          className="drop-shadow-lg hover:drop-shadow-xl rounded-lg h-18 xs:h-24 sm:h-28 md:h-36 lg:h-48 mx-auto object-contain mt-2 lg:mt-0 mb-2 lg:mb-4"
+       <motion.img
+        whileHover={{ rotate: 40 }}
+        transition={{ duration: 0.3 }}
+        src={imageUrl} // usa la URL completa guardada en Firestore
+        alt={name}
+        className="drop-shadow-lg hover:drop-shadow-xl rounded-lg h-18 xs:h-24 sm:h-28 md:h-36 lg:h-48 mx-auto object-contain mt-2 lg:mt-0 mb-2 lg:mb-4"
         />
         <h3 className="font-pacifico text-orange-950 text-xl sm:text-2xl lg:text-3xl mb-2">
           {name}
