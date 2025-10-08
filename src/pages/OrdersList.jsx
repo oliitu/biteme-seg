@@ -1,5 +1,13 @@
-import { useEffect, useState } from "react";
-import { collection, query, orderBy, onSnapshot, updateDoc, doc } from "firebase/firestore";
+import { useEffect, useMemo, useState } from "react";
+import {
+  collection,
+  query,
+  orderBy,
+  onSnapshot,
+  updateDoc,
+  doc,
+  addDoc,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -33,22 +41,78 @@ function PedidosList() {
 
   // --- 🔸 RESUMEN DIARIO ---
   const hoy = new Date();
-  const pedidosHoy = pedidos.filter((p) => {
-    const fecha = p.fecha?.toDate?.();
-    return (
-      p.estado === "listo" &&
-      fecha &&
-      fecha.getDate() === hoy.getDate() &&
-      fecha.getMonth() === hoy.getMonth() &&
-      fecha.getFullYear() === hoy.getFullYear()
-    );
-  });
 
-  const totalIngresos = pedidosHoy.reduce((acc, p) => acc + (p.total || 0), 0);
-  const totalArticulos = pedidosHoy.reduce(
-    (acc, p) => acc + (Array.isArray(p.carrito) ? p.carrito.reduce((s, item) => s + (item.quantity || 0), 0) : 0),
-    0
+  const pedidosHoy = useMemo(() => {
+  return pedidos.filter((p) => p.dia === "hoy" && p.estado === "listo");
+}, [pedidos]);
+
+
+  const totalIngresos = useMemo(
+    () => pedidosHoy.reduce((acc, p) => acc + (p.total || 0), 0),
+    [pedidosHoy]
   );
+
+  const totalArticulos = useMemo(
+    () =>
+      pedidosHoy.reduce(
+        (acc, p) =>
+          acc +
+          (Array.isArray(p.carrito)
+            ? p.carrito.reduce((s, item) => s + (item.quantity || 0), 0)
+            : 0),
+        0
+      ),
+    [pedidosHoy]
+  );
+
+  const resumenCookies = useMemo(() => {
+    const conteo = {};
+    pedidosHoy.forEach((pedido) => {
+      if (Array.isArray(pedido.carrito)) {
+        pedido.carrito.forEach((item) => {
+          conteo[item.name] = (conteo[item.name] || 0) + (item.quantity || 0);
+        });
+      }
+    });
+    return conteo;
+  }, [pedidosHoy]);
+
+  // --- 🔸 Reiniciar día ---
+ const reiniciarDia = async () => {
+  if (pedidosHoy.length === 0) {
+    alert("No hay pedidos completados hoy.");
+    return;
+  }
+
+  const confirmacion = confirm(
+    "¿Seguro que querés cerrar el día y guardar el resumen?"
+  );
+  if (!confirmacion) return;
+
+  try {
+    // Guarda el resumen del día
+    const resumenRef = collection(db, "resumenesDiarios");
+    await addDoc(resumenRef, {
+      fecha: hoy,
+      totalPedidos: pedidosHoy.length,
+      totalArticulos,
+      totalIngresos,
+      cookiesVendidas: resumenCookies,
+    });
+
+    // Actualiza todos los pedidos de hoy a "ayer"
+    for (const pedido of pedidosHoy) {
+      const pedidoRef = doc(db, "pedidos", pedido.id);
+      await updateDoc(pedidoRef, { dia: "ayer" });
+    }
+
+    alert("✅ Día cerrado y resumen guardado correctamente.");
+  } catch (error) {
+    console.error("Error al reiniciar el día:", error);
+    alert("❌ Error al cerrar el día.");
+  }
+};
+
 
   const pedidosFiltrados = pedidos.filter((pedido) =>
     filtro === "todos" ? true : pedido.estado === filtro
@@ -59,16 +123,32 @@ function PedidosList() {
       {/* 🔸 Resumen del día */}
       <div className="bg-amber-100 p-4 rounded-lg shadow-md mb-6 text-center">
         <h2 className="text-lg font-bold text-amber-900 mb-2">Resumen del día</h2>
-        <p>
-          Pedidos completados: <strong>{pedidosHoy.length}</strong>
-        </p>
-        <p>
-          Artículos vendidos: <strong>{totalArticulos}</strong>
-        </p>
-        <p>
-          Ingresos totales:{" "}
-          <strong>${totalIngresos.toLocaleString("es-AR")}</strong>
-        </p>
+        <p>Pedidos completados: <strong>{pedidosHoy.length}</strong></p>
+        <p>Artículos vendidos: <strong>{totalArticulos}</strong></p>
+        <p>Ingresos totales: <strong>${totalIngresos.toLocaleString("es-AR")}</strong></p>
+
+        {/* 🔹 Cookies vendidas */}
+        <div className="mt-4 text-left justify-self-center p-3">
+          <h3 className="font-semibold text-amber-900 mb-2">🍪 Cookies vendidas hoy:</h3>
+          {Object.entries(resumenCookies).length > 0 ? (
+            <ul className="text-sm text-gray-800">
+              {Object.entries(resumenCookies).map(([nombre, cantidad]) => (
+                <li key={nombre}>
+                  {nombre}: <strong>{cantidad}</strong>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500 italic">No hay ventas hoy.</p>
+          )}
+        </div>
+
+        <button
+          onClick={reiniciarDia}
+          className="mt-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
+        >
+          Reiniciar día
+        </button>
       </div>
 
       {/* Selector de filtro */}

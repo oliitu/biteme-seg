@@ -104,7 +104,8 @@ export default function ProductsList() {
       cliente: clienteNombre,
       metodo: metodoPago,
       fecha: Timestamp.fromDate(new Date()),
-      estado: "en proceso"
+      estado: "en proceso",
+      dia: "hoy"
     };
 
     try {
