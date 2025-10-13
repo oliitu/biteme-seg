@@ -1,0 +1,34 @@
+{
+    "name": "BiteMe",
+    "short_name": "BiteMe",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#fcb9c6",
+    "theme_color": "#fcb9c6",
+    "icons": [
+      {
+        "src": "/icons/web-app-manifest-192x192.png",
+        "type": "image/png",
+        "sizes": "192x192"
+      },
+      {
+        "src": "/icons/web-app-manifest-512x512.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "screenshots": [
+  {
+    "src": "/screenshots/home-wide.png",
+    "sizes": "1280x720",
+    "type": "image/png",
+    "form_factor": "wide"
+  },
+  {
+    "src": "/screenshots/home-mobile.png",
+    "sizes": "375x667",
+    "type": "image/png"
+  }
+]
+  }
+  

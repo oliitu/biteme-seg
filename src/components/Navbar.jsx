@@ -7,7 +7,7 @@ function Navbar() {
       <div className="flex gap-4">
         <Link to="/" className="font-bold sm:text-base text-sm">BiteMe</Link>
         <Link to="/productos" className="sm:text-base text-sm">Comprar</Link>
-        <Link to="/admin" className="sm:text-base text-sm">Admin</Link>
+        {/* <Link to="/admin" className="sm:text-base text-sm">Admin</Link> */}
       </div>
       
     </nav>

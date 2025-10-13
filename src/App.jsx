@@ -6,6 +6,7 @@ import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
 import { Navigate } from "react-router-dom"
 import OrdersList from "./pages/OrdersList";
+import ResumenesList from "./pages/ResumenesList";
 import ManageCookies from "./pages/ManageCookies";
 
 function PrivateRoute({ children }) {
@@ -29,6 +30,14 @@ function App() {
   element={
     <PrivateRoute>
       <OrdersList />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/admin/resumenes"
+  element={
+    <PrivateRoute>
+      <ResumenesList />
     </PrivateRoute>
   }
 />
