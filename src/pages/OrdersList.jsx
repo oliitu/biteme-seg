@@ -89,16 +89,23 @@ function PedidosList() {
   );
   if (!confirmacion) return;
 
-  try {
-    // Guarda el resumen del día
-    const resumenRef = collection(db, "resumenesDiarios");
-    await addDoc(resumenRef, {
-      fecha: hoy,
-      totalPedidos: pedidosHoy.length,
-      totalArticulos,
-      totalIngresos,
-      cookiesVendidas: resumenCookies,
-    });
+   try {
+
+    // 🛑 PASO 1: TRANSFORMAR EL OBJETO 'resumenCookies' A UN ARRAY DE OBJETOS
+    const cookiesArray = Object.keys(resumenCookies).map(name => ({
+      name: name, // El nombre de la cookie
+      quantity: resumenCookies[name] // La cantidad total
+    }));
+    
+ // Guarda el resumen del día
+const resumenRef = collection(db, "resumenesDiarios");
+ await addDoc(resumenRef, { fecha: hoy,
+ totalPedidos: pedidosHoy.length,
+ totalArticulos,
+ totalIngresos,
+ cookiesVendidas: cookiesArray, // 🛑 GUARDAMOS EL ARRAY
+ });
+
 
     // Actualiza todos los pedidos de hoy a "ayer"
     for (const pedido of pedidosHoy) {

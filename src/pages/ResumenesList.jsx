@@ -21,8 +21,7 @@ export default function ResumenesList() {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4 }}
             layout
-            // Ajusta las clases de Tailwind según necesites, aquí he usado un color diferente
-            className="bg-amber-50 rounded-xl shadow-lg p-6 flex flex-col h-full hover:shadow-xl transition-shadow"
+            className="bg-amber-100 rounded-xl shadow-lg p-6 flex flex-col h-full hover:shadow-xl transition-shadow"
           >
             {/* Título y Fecha */}
             <h2 className="text-xl font-extrabold text-amber-900 mb-3 border-b pb-2">
@@ -44,22 +43,22 @@ export default function ResumenesList() {
 
             {/* Ingresos Totales */}
             <div className="mb-4 bg-[#ff84ad] p-3 rounded-lg">
-                <p className="text-xl font-bold text-blue-900 text-center">
+                <p className="text-xl font-bold text-yellow-950 text-center">
                   💰 Ingresos Totales: ${resumen.totalIngresos.toFixed(2)}
                 </p>
             </div>
 
 
             {/* Listado de Artículos (cookiesVendidas) */}
-            <h4 className="text-base font-bold text-gray-800 mb-2 mt-3 border-t pt-2">
+            <h4 className="text-base font-bold text-yellow-950 mb-2 mt-3 border-t pt-2">
                 Artículos Vendidos:
             </h4>
             {Array.isArray(resumen.cookiesVendidas) && resumen.cookiesVendidas.length > 0 ? (
                 <ul className="mb-3 space-y-1 text-sm overflow-auto max-h-40">
                     {/* El objeto 'cookiesVendidas' parece contener { name, quantity } */}
                     {resumen.cookiesVendidas.map((item, index) => (
-                        <li key={index} className="text-gray-700 bg-white p-2 rounded-md shadow-sm">
-                            🍪 <strong className="text-blue-700">{item.name}</strong> — <span className="font-bold">{item.quantity}</span> unidades vendidas
+                        <li key={index} className="text-gray-700 bg-amber-50 p-2 rounded-md shadow-sm">
+                            🍪 <strong className="text-[#ff84ad]">{item.name}</strong> — <span className="font-bold">{item.quantity}</span> unidades vendidas
                         </li>
                     ))}
                 </ul>

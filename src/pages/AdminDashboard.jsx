@@ -42,6 +42,12 @@ export default function AdminDashboard() {
           Ver Pedidos
         </button>
         <button
+          onClick={() => navigate("/admin/resumenes")}
+          className="bg-yellow-900 hover:bg-yellow-950 text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
+        >
+          Ver Resumenes
+        </button>
+        <button
           onClick={() => navigate("/admin/cookies")}
           className="bg-[#ff84ad] hover:bg-[#ce5980] text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
         >

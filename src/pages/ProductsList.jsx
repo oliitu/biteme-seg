@@ -28,7 +28,7 @@ export default function ProductsList() {
   
   // Context del carrito
   const { cart, cartTotal, clearCart } = useContext(CartContext);
-
+   
   // Efecto para controlar el scroll del body cuando hay modales abiertos
   useEffect(() => {
     document.body.style.overflow = mostrarModal ? 'hidden' : 'auto';
@@ -160,6 +160,12 @@ export default function ProductsList() {
       console.error("Error al guardar el pedido:", error);
       setToast("Error al confirmar el pedido");
     }
+    for (const item of cart) {
+  const productRef = doc(db, "cookies", item.id);
+
+  // Usamos increment(-n) para restar la cantidad comprada
+  await setDoc(productRef, { stock: increment(-item.quantity) }, { merge: true });
+}
   };
 
   return (

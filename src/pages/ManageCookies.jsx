@@ -4,7 +4,7 @@ import { db } from "../firebase/config";
 
 export default function ManageCookies() {
 const [cookies, setCookies] = useState([]);
-const [newCookie, setNewCookie] = useState({ name: "", description: "", price: "", imageUrl: "" });
+const [newCookie, setNewCookie] = useState({ name: "", description: "", price: "", stock:"", imageUrl: "" });
 const [editing, setEditing] = useState(null);
 const [uploading, setUploading] = useState(false);
 
@@ -49,9 +49,14 @@ e.preventDefault();
 try {
 if (editing) {
 const ref = doc(db, "cookies", editing);
-await updateDoc(ref, newCookie);
+await updateDoc(ref, { 
+  ...newCookie, 
+  price: Number(newCookie.price), 
+  stock: Number(newCookie.stock) 
+});
+
 } else {
-await addDoc(cookiesRef, { ...newCookie, price: Number(newCookie.price) });
+await addDoc(cookiesRef, { ...newCookie, price: Number(newCookie.price), stock: Number(newCookie.stock) });
 }
 setNewCookie({ name: "", description: "", price: "", stock: "", imageUrl: "" });
 setEditing(null);

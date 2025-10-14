@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../context/CartContext";
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export default function Cart({
   setMostrarModal,
@@ -76,7 +78,7 @@ export default function Cart({
       {mostrarCarrito && (
         <div
           id="carrito"
-          className="mt-0 absolute right-0 max-w-sm bg-[#fff8de] rounded shadow p-4 z-10 sm:w-auto max-h-[80vh] overflow-y-auto min-w-[200px]"
+          className="mt-0 absolute right-0  bg-[#fff8de] rounded shadow p-4 z-10 sm:w-auto  overflow-y-auto min-w-[200px]"
         >
           {isEmpty ? (
             <p className="text-center">El carrito está vacío</p>
@@ -167,7 +169,7 @@ export default function Cart({
                 {cart.map((cookie) => (
                   <div key={cookie.id} className="flex gap-3 border-b pb-3 border-yellow-900">
                     <img
-                      src={`/img/${cookie.image}.png`}
+                      src={cookie.imageUrl}
                       alt={cookie.name}
                       className="w-16 h-16 drop-shadow-md object-cover rounded"
                     />
