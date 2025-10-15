@@ -189,7 +189,7 @@ export default function Cart({
                                 value={inputCode}
                                 onChange={(e) => setInputCode(e.target.value)}
                                 disabled={discountApplied}
-                                className="flex-grow p-1 border border-yellow-900 rounded bg-amber-50 disabled:bg-[#f5e6b7] text-orange-950 text-sm"
+                                className="flex-grow p-1 border border-yellow-900 rounded bg-amber-50 disabled:bg-[#fcb9c6] text-orange-950 text-sm"
                             />
                             {!discountApplied ? (
                                 <motion.button
@@ -307,7 +307,7 @@ export default function Cart({
                                 value={inputCode}
                                 onChange={(e) => setInputCode(e.target.value)}
                                 disabled={discountApplied}
-                                className="flex-grow p-1 border border-yellow-900 rounded bg-[#fff8de] disabled:bg-[#f5e6b7] text-orange-950 text-sm"
+                                className="flex-grow p-1 border border-yellow-900 rounded bg-[#fff8de] disabled:bg-[#fcb9c6] text-orange-950 text-sm"
                             />
                             {!discountApplied ? (
                                 <motion.button
