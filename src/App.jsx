@@ -1,10 +1,9 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import LandingPage from './pages/LandingPage'
 import ProductsList from './pages/ProductsList'
 import AdminLogin from './pages/AdminLogin'
 import AdminDashboard from './pages/AdminDashboard'
-import { Navigate } from "react-router-dom"
 import OrdersList from "./pages/OrdersList";
 import ResumenesList from "./pages/ResumenesList";
 import ManageCookies from "./pages/ManageCookies";
