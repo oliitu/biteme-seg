@@ -303,7 +303,7 @@ export default function Cart({
                         <div className="flex space-x-2">
                             <input
                                 type="text"
-                                placeholder="EXPODESCUENTOS"
+                                placeholder=""
                                 value={inputCode}
                                 onChange={(e) => setInputCode(e.target.value)}
                                 disabled={discountApplied}
