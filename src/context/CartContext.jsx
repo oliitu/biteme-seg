@@ -1,4 +1,7 @@
 import { createContext, useState, useEffect, useMemo } from "react";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase/config"; // Ajustá la ruta según tu proyecto
+
 
 // Definición de las constantes del descuento
 const DISCOUNT_CODE = "EXPODESCUENTOS";
@@ -10,7 +13,24 @@ export function CartProvider({ children }) {
     const [cart, setCart] = useState([]);
     const [discountApplied, setDiscountApplied] = useState(false);
     const [currentDiscountCode, setCurrentDiscountCode] = useState('');
+    const [globalPromo, setGlobalPromo] = useState(null);
 
+// Cargar promo global desde Firestore
+useEffect(() => {
+  const fetchGlobalPromo = async () => {
+    try {
+      const snapshot = await getDocs(collection(db, "promos"));
+      const now = new Date();
+      const activePromo = snapshot.docs
+        .map(doc => ({ id: doc.id, ...doc.data() }))
+        .find(p => p.id === "global" && p.activo && new Date(p.inicio.seconds * 1000) <= now && new Date(p.fin.seconds * 1000) >= now);
+      if (activePromo) setGlobalPromo(activePromo);
+    } catch (err) {
+      console.error("Error fetching global promo:", err);
+    }
+  };
+  fetchGlobalPromo();
+}, []);
     // === GESTIÓN DE LOCAL STORAGE ===
 
     // 1. Cargar carrito, descuento y código al iniciar
@@ -46,24 +66,19 @@ export function CartProvider({ children }) {
 
     // Calcular Subtotal (total sin descuento)
     const cartSubtotal = useMemo(() => {
-        return cart.reduce(
-            (acc, item) => acc + item.price * item.quantity,
-            0
-        );
-    }, [cart]);
+  return cart.reduce((acc, item) => acc + item.priceFinal * item.quantity, 0);
+}, [cart]);
 
-    // Aplicar descuento y calcular el Total Final
-    const finalTotal = useMemo(() => {
-        if (discountApplied) {
-            return cartSubtotal * (1 - DISCOUNT_RATE);
-        }
-        return cartSubtotal;
-    }, [cartSubtotal, discountApplied]);
+const finalTotal = useMemo(() => {
+  if (discountApplied) {
+    return cartSubtotal * (1 - DISCOUNT_RATE); // aplica código de descuento
+  }
+  return cartSubtotal;
+}, [cartSubtotal, discountApplied]);
+const discountAmount = useMemo(() => {
+  return discountApplied ? cartSubtotal * DISCOUNT_RATE : 0;
+}, [cartSubtotal, discountApplied]);
 
-    // Calcular el monto del descuento
-    const discountAmount = useMemo(() => {
-        return discountApplied ? cartSubtotal * DISCOUNT_RATE : 0;
-    }, [cartSubtotal, discountApplied]);
 
     // === FUNCIONES DE DESCUENTO ===
 
@@ -94,25 +109,44 @@ export function CartProvider({ children }) {
 
     // ✅ Agregar producto (lógica de stock incluida)
     const addToCart = (product) => {
-        setCart((prevCart) => {
-            const existing = prevCart.find((item) => item.id === product.id);
-            if (existing) {
-                if (existing.quantity < product.stock) {
-                    return prevCart.map((item) =>
-                        item.id === product.id
-                            ? { ...item, quantity: item.quantity + 1 }
-                            : item
-                    );
-                } else {
-                    return prevCart;
-                }
-            }
-            if (product.stock > 0) {
-                return [...prevCart, { ...product, quantity: 1 }];
-            }
-            return prevCart;
-        });
-    };
+  const now = new Date();
+  
+  // Promo individual válida
+  const individualPromoActive =
+    product.specialPrice &&
+    product.promoStart &&
+    product.promoEnd &&
+    now >= (product.promoStart.seconds ? new Date(product.promoStart.seconds * 1000) : new Date(product.promoStart)) &&
+    now <= (product.promoEnd.seconds ? new Date(product.promoEnd.seconds * 1000) : new Date(product.promoEnd));
+
+  // Precio base según promo individual o normal
+  let priceFinal = individualPromoActive ? product.specialPrice : product.price;
+
+  // Aplicar descuento global si existe
+  if (globalPromo) {
+    priceFinal = priceFinal * (1 - globalPromo.descuento / 100);
+  }
+
+  setCart((prevCart) => {
+    const existing = prevCart.find((item) => item.id === product.id);
+    if (existing) {
+      if (existing.quantity < product.stock) {
+        return prevCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1, priceFinal }
+            : item
+        );
+      } else {
+        return prevCart;
+      }
+    }
+    if (product.stock > 0) {
+      return [...prevCart, { ...product, quantity: 1, priceFinal }];
+    }
+    return prevCart;
+  });
+};
+
 
     // ✅ Eliminar producto
     const removeFromCart = (id) => {

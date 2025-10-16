@@ -56,7 +56,15 @@ await updateDoc(ref, {
 });
 
 } else {
-await addDoc(cookiesRef, { ...newCookie, price: Number(newCookie.price), stock: Number(newCookie.stock) });
+await addDoc(cookiesRef, {
+  ...newCookie,
+  price: Number(newCookie.price),
+  stock: Number(newCookie.stock),
+  specialPrice: newCookie.specialPrice ? Number(newCookie.specialPrice) : null,
+  promoStart: newCookie.promoStart ? new Date(newCookie.promoStart) : null,
+  promoEnd: newCookie.promoEnd ? new Date(newCookie.promoEnd) : null,
+});
+
 }
 setNewCookie({ name: "", description: "", price: "", stock: "", imageUrl: "" });
 setEditing(null);
@@ -112,7 +120,44 @@ Gestionar Cookies </h2>
       className="border p-2 w-full rounded"
       required
     />
-    
+    {/* Precio especial y fechas */}
+<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+  <label className="flex items-center gap-2">
+    <input
+      type="checkbox"
+      checked={newCookie.isSpecial || false}
+      onChange={(e) => setNewCookie({ ...newCookie, isSpecial: e.target.checked })}
+    />
+    Activar precio especial
+  </label>
+
+  <input
+    type="number"
+    placeholder="Precio especial"
+    value={newCookie.specialPrice || ""}
+    onChange={(e) => setNewCookie({ ...newCookie, specialPrice: e.target.value })}
+    className="border p-2 w-full rounded"
+    disabled={!newCookie.isSpecial}
+  />
+</div>
+
+<div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+  <input
+    type="datetime-local"
+    value={newCookie.promoStart || ""}
+    onChange={(e) => setNewCookie({ ...newCookie, promoStart: e.target.value })}
+    className="border p-2 w-full rounded"
+    disabled={!newCookie.isSpecial}
+  />
+  <input
+    type="datetime-local"
+    value={newCookie.promoEnd || ""}
+    onChange={(e) => setNewCookie({ ...newCookie, promoEnd: e.target.value })}
+    className="border p-2 w-full rounded"
+    disabled={!newCookie.isSpecial}
+  />
+</div>
+
     {/* Subida de imagen */}
     <input type="file" accept="image/*" onChange={handleImageUpload} className="border p-2 w-full rounded" />
     {uploading && <p className="text-sm text-gray-500">Subiendo imagen...</p>}

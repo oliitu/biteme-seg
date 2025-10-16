@@ -1,15 +1,78 @@
 import { motion } from "framer-motion";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../context/CartContext";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export default function ProductCard({ product }) {
   const { addToCart, cart } = useContext(CartContext);
-  const { name, imageUrl, description, price, stock } = product;
+  const { name, imageUrl, description, price, specialPrice, isSpecial, promoStart, promoEnd, stock } = product;
 
-  // Buscar la cantidad que ya está en el carrito
+  const [promoGlobal, setPromoGlobal] = useState(null);
+  const [timeLeft, setTimeLeft] = useState("");
+
+  // 🔹 Traer promo global desde Firestore
+  useEffect(() => {
+    const fetchPromoGlobal = async () => {
+      try {
+        const docRef = doc(db, "promos", "ci2otcxCHj2CZ4HHZgqB"); // tu doc global
+        const snap = await getDoc(docRef);
+        if (snap.exists()) setPromoGlobal(snap.data());
+      } catch (error) {
+        console.error("Error al obtener promo global:", error);
+      }
+    };
+    fetchPromoGlobal();
+  }, []);
+
+  const now = new Date();
+
+  // 🔸 Promo individual
+  const start = promoStart ? new Date(promoStart.seconds ? promoStart.seconds * 1000 : promoStart) : null;
+  const end = promoEnd ? new Date(promoEnd.seconds ? promoEnd.seconds * 1000 : promoEnd) : null;
+  const isPromoIndividualActiva = isSpecial && start && end && now >= start && now <= end;
+
+  // 🔸 Promo global
+  const inicioGlobal = promoGlobal?.inicio ? new Date(promoGlobal.inicio.seconds ? promoGlobal.inicio.seconds * 1000 : promoGlobal.inicio) : null;
+  const finGlobal = promoGlobal?.fin ? new Date(promoGlobal.fin.seconds ? promoGlobal.fin.seconds * 1000 : promoGlobal.fin) : null;
+  const isPromoGlobalActiva = promoGlobal?.activo && inicioGlobal && finGlobal && now >= inicioGlobal && now <= finGlobal;
+
+  // 🔸 Countdown (para promo activa)
+  const promoEndDate = isPromoIndividualActiva ? end : isPromoGlobalActiva ? finGlobal : null;
+  useEffect(() => {
+    if (!promoEndDate) return;
+    const timer = setInterval(() => {
+      const diff = promoEndDate - new Date();
+      if (diff <= 0) {
+        setTimeLeft("Finalizada");
+        clearInterval(timer);
+      } else {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff / (1000 * 60)) % 60);
+        const seconds = Math.floor((diff / 1000) % 60);
+        setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [promoEndDate]);
+
+  // 🔹 Calcular precio final
+  let finalPrice = price;
+  let discountText = "";
+
+  if (isPromoGlobalActiva && promoGlobal?.descuento) {
+    finalPrice = (price * (1 - promoGlobal.descuento / 100)).toFixed(0);
+    discountText = `-${promoGlobal.descuento}% OFF`;
+  }
+
+  if (isPromoIndividualActiva) {
+    // ⚠️ La promo individual tiene prioridad sobre la global
+    finalPrice = specialPrice;
+    discountText = "Promo especial 🍪";
+  }
+
   const cartItem = cart.find((item) => item.id === product.id);
   const cantidadEnCarrito = cartItem ? cartItem.quantity : 0;
-
   const isDisabled = stock === 0 || cantidadEnCarrito >= stock;
 
   return (
@@ -28,7 +91,20 @@ export default function ProductCard({ product }) {
         />
         <h3 className="font-pacifico text-orange-950 text-xl sm:text-2xl lg:text-3xl mb-2">{name}</h3>
         <p className="mb-2 mx-2 text-xs sm:text-base text-orange-950 font-poppins flex-grow">{description}</p>
-        <p className="font-poppins text-[#220d06] font-bold text-sm md:text-lg lg:text-lg mb-0 md:mb-2 lg:mb-2">${price}</p>
+
+        {(isPromoGlobalActiva || isPromoIndividualActiva) ? (
+          <div className="flex flex-col items-center mb-2">
+            <p className="text-xs sm:text-sm line-through text-gray-600">${price}</p>
+            <p className="text-base md:text-xl lg:text-xl text-red-600 font-bold">
+              ${finalPrice} 
+            </p>
+          </div>
+        ) : (
+          <p className="font-poppins text-[#220d06] font-bold text-base md:text-xl lg:text-xl mb-0 md:mb-2 lg:mb-2">
+            ${price}
+          </p>
+        )}
+
         <motion.button
           whileTap={{ scale: 0.95 }}
           disabled={isDisabled}

@@ -7,6 +7,7 @@ import AdminDashboard from './pages/AdminDashboard'
 import OrdersList from "./pages/OrdersList";
 import ResumenesList from "./pages/ResumenesList";
 import ManageCookies from "./pages/ManageCookies";
+import ManagePromo from './pages/ManagePromo';
 
 function PrivateRoute({ children }) {
   const isAdmin = localStorage.getItem("isAdmin") === "true"
@@ -45,6 +46,14 @@ function App() {
   element={
     <PrivateRoute>
       <ManageCookies />
+    </PrivateRoute>
+  }
+/>
+<Route
+  path="/admin/promos"
+  element={
+    <PrivateRoute>
+      <ManagePromo />
     </PrivateRoute>
   }
 />

@@ -44,21 +44,24 @@ export default function ProductsList() {
 
   // Obtener productos de Firebase
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "cookies"));
-        const data = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setProducts(data);
-      } catch (error) {
-        console.error("Error al traer productos:", error);
-      }
-    };
+  const fetchProducts = async () => {
+    const snapshot = await getDocs(collection(db, "cookies"));
+    const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    fetchProducts();
-  }, []);
+    const today = new Date();
+    const halloween = new Date("2025-10-31T00:00:00");
+
+    const updated = data.map((prod) => {
+      if (today.toDateString() === halloween.toDateString() && prod.name.includes("Halloween")) {
+        return { ...prod, isSpecial: true };
+      }
+      return prod;
+    });
+
+    setProducts(updated);
+  };
+  fetchProducts();
+}, []);
 
   // Función para generar link de WhatsApp
   const obtenerLinkWhatsApp = () => {
@@ -174,8 +177,7 @@ export default function ProductsList() {
       <div>
         <Cart isStickyCart={true} setMostrarModal={setMostrarModal} />
       </div>
-
-      {/* Sección de productos */}
+      
       <section className="align-items-center pt-10 lg:pt-20 pb-4 lg:pb-16 px-6">
         <div className="max-w-6xl mx-auto text-center mb-7 lg:mb-13">
           <h2 className="text-3xl md:text-5xl lg:text-7xl font-pacifico text-orange-950 mb-2 lg:mb-5">

@@ -53,6 +53,12 @@ export default function AdminDashboard() {
         >
           Gestionar Cookies
         </button>
+        <button
+          onClick={() => navigate("/admin/promos")}
+          className="bg-[#ff84ad] hover:bg-[#ce5980] text-white py-3 rounded-lg font-semibold transition duration-200 transform hover:scale-105"
+        >
+          Gestionar Promos
+        </button>
       </div>
 
       {/* Botón de logout */}
