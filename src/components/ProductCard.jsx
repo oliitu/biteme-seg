@@ -15,7 +15,7 @@ export default function ProductCard({ product }) {
   useEffect(() => {
     const fetchPromoGlobal = async () => {
       try {
-        const docRef = doc(db, "promos", "ci2otcxCHj2CZ4HHZgqB"); // tu doc global
+        const docRef = doc(db, "promos", "global"); // tu doc global
         const snap = await getDoc(docRef);
         if (snap.exists()) setPromoGlobal(snap.data());
       } catch (error) {
@@ -58,17 +58,15 @@ export default function ProductCard({ product }) {
 
   // 🔹 Calcular precio final
   let finalPrice = price;
-  let discountText = "";
+
 
   if (isPromoGlobalActiva && promoGlobal?.descuento) {
     finalPrice = (price * (1 - promoGlobal.descuento / 100)).toFixed(0);
-    discountText = `-${promoGlobal.descuento}% OFF`;
   }
 
   if (isPromoIndividualActiva) {
     // ⚠️ La promo individual tiene prioridad sobre la global
     finalPrice = specialPrice;
-    discountText = "Promo especial 🍪";
   }
 
   const cartItem = cart.find((item) => item.id === product.id);

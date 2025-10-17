@@ -108,23 +108,42 @@ const discountAmount = useMemo(() => {
     );
 
     // ✅ Agregar producto (lógica de stock incluida)
-    const addToCart = (product) => {
+   const addToCart = (product) => {
   const now = new Date();
-  
-  // Promo individual válida
+
+  // Promo individual activa
   const individualPromoActive =
     product.specialPrice &&
     product.promoStart &&
     product.promoEnd &&
-    now >= (product.promoStart.seconds ? new Date(product.promoStart.seconds * 1000) : new Date(product.promoStart)) &&
-    now <= (product.promoEnd.seconds ? new Date(product.promoEnd.seconds * 1000) : new Date(product.promoEnd));
+    now >= (product.promoStart.seconds
+      ? new Date(product.promoStart.seconds * 1000)
+      : new Date(product.promoStart)) &&
+    now <= (product.promoEnd.seconds
+      ? new Date(product.promoEnd.seconds * 1000)
+      : new Date(product.promoEnd));
 
   // Precio base según promo individual o normal
-  let priceFinal = individualPromoActive ? product.specialPrice : product.price;
+  let priceFinal = individualPromoActive
+    ? product.specialPrice
+    : product.price;
 
-  // Aplicar descuento global si existe
-  if (globalPromo) {
-    priceFinal = priceFinal * (1 - globalPromo.descuento / 100);
+  // ✅ Solo aplicar globalPromo si NO hay promo individual
+  if (!individualPromoActive && globalPromo && globalPromo.activo) {
+    const gStart = globalPromo.inicio
+      ? (globalPromo.inicio.seconds
+          ? new Date(globalPromo.inicio.seconds * 1000)
+          : new Date(globalPromo.inicio))
+      : null;
+    const gEnd = globalPromo.fin
+      ? (globalPromo.fin.seconds
+          ? new Date(globalPromo.fin.seconds * 1000)
+          : new Date(globalPromo.fin))
+      : null;
+
+    if (gStart && gEnd && now >= gStart && now <= gEnd) {
+      priceFinal = priceFinal * (1 - globalPromo.descuento / 100);
+    }
   }
 
   setCart((prevCart) => {
@@ -146,6 +165,7 @@ const discountAmount = useMemo(() => {
     return prevCart;
   });
 };
+
 
 
     // ✅ Eliminar producto

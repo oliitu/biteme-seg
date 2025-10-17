@@ -7,21 +7,36 @@ export default function PromoBar({ promo }) {
 
   useEffect(() => {
     const calcularTiempo = () => {
-      if (!promo.fin) return;
+      if (!promo?.fin) return;
+
+      const fin =
+        typeof promo.fin === "string"
+          ? new Date(promo.fin)
+          : promo.fin.seconds
+          ? new Date(promo.fin.seconds * 1000)
+          : new Date(promo.fin);
+
       const ahora = new Date();
-      const fin = new Date(promo.fin);
       const diff = fin - ahora;
+
       if (diff <= 0) {
         setTiempoRestante("Finalizada");
         return;
       }
-      const horas = Math.floor(diff / (1000 * 60 * 60));
+
+      const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const minutos = Math.floor((diff / (1000 * 60)) % 60);
-      setTiempoRestante(`${horas}h ${minutos}m`);
+      const segundos = Math.floor((diff / 1000) % 60);
+
+      // Mostrar siempre días, horas, minutos y segundos
+      const texto = `${dias}d ${horas}h ${minutos}m ${segundos}s`;
+      setTiempoRestante(texto);
     };
 
     calcularTiempo();
-    const timer = setInterval(calcularTiempo, 60000); // actualiza cada minuto
+    const timer = setInterval(calcularTiempo, 1000); // actualizar cada segundo
+
     return () => clearInterval(timer);
   }, [promo.fin]);
 
@@ -36,7 +51,8 @@ export default function PromoBar({ promo }) {
       🎉 {promo.title || promo.name} —{" "}
       {promo.motivo
         ? `${promo.motivo} (${promo.descuento || ""}% OFF)`
-        : `¡${promo.specialPrice ? `A $${promo.specialPrice}` : "Descuento especial"} hasta ${tiempoRestante}!`}
+        : `¡${promo.specialPrice ? `A $${promo.specialPrice}` : "Descuento especial"}!`}{" "}
+      ⏰ {tiempoRestante}
     </motion.div>
   );
 }
