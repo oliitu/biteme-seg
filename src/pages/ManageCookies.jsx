@@ -1,89 +1,125 @@
 import { useState, useEffect } from "react";
-import { collection, addDoc, getDocs, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  doc,
+  Timestamp, // 👈 import clave
+} from "firebase/firestore";
 import { db } from "../firebase/config";
 
 export default function ManageCookies() {
-const [cookies, setCookies] = useState([]);
-const [newCookie, setNewCookie] = useState({ name: "", description: "", price: "", stock:"", imageUrl: "" });
-const [editing, setEditing] = useState(null);
-const [uploading, setUploading] = useState(false);
-
-const cookiesRef = collection(db, "cookies");
-
-useEffect(() => {
-const fetchCookies = async () => {
-const snapshot = await getDocs(cookiesRef);
-setCookies(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-};
-fetchCookies();
-}, []);
-
-// 📸 Subida de imagen a Cloudinary
-const handleImageUpload = async (e) => {
-const file = e.target.files[0];
-if (!file) return;
-setUploading(true);
-const formData = new FormData();
-formData.append("file", file);
-formData.append("upload_preset", "biteme-cookies"); // tu preset en Cloudinary
-formData.append("cloud_name", "dxpycsyjw"); // reemplazá con tu Cloud name
-
-try {
-  const res = await fetch("https://api.cloudinary.com/v1_1/dxpycsyjw/image/upload", {
-    method: "POST",
-    body: formData,
+  const [cookies, setCookies] = useState([]);
+  const [newCookie, setNewCookie] = useState({
+    name: "",
+    description: "",
+    price: "",
+    stock: "",
+    imageUrl: "",
   });
-  const data = await res.json();
-  setNewCookie({ ...newCookie, imageUrl: data.secure_url });
-} catch (error) {
-  console.error("Error al subir imagen:", error);
-} finally {
-  setUploading(false);
-}
+  const [editing, setEditing] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
+  const cookiesRef = collection(db, "cookies");
 
-};
+  useEffect(() => {
+    const fetchCookies = async () => {
+      const snapshot = await getDocs(cookiesRef);
+      setCookies(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    };
+    fetchCookies();
+  }, []);
 
-const handleSubmit = async (e) => {
-e.preventDefault();
-try {
-if (editing) {
-const ref = doc(db, "cookies", editing);
-await updateDoc(ref, { 
-  ...newCookie, 
-  price: Number(newCookie.price), 
-  stock: Number(newCookie.stock) 
-});
+  // 📸 Subida de imagen
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "biteme-cookies");
+    formData.append("cloud_name", "dxpycsyjw");
 
-} else {
-await addDoc(cookiesRef, {
-  ...newCookie,
-  price: Number(newCookie.price),
-  stock: Number(newCookie.stock),
-  specialPrice: newCookie.specialPrice ? Number(newCookie.specialPrice) : null,
-  promoStart: newCookie.promoStart ? new Date(newCookie.promoStart) : null,
-  promoEnd: newCookie.promoEnd ? new Date(newCookie.promoEnd) : null,
-});
+    try {
+      const res = await fetch("https://api.cloudinary.com/v1_1/dxpycsyjw/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      setNewCookie({ ...newCookie, imageUrl: data.secure_url });
+    } catch (error) {
+      console.error("Error al subir imagen:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
 
-}
-setNewCookie({ name: "", description: "", price: "", stock: "", imageUrl: "" });
-setEditing(null);
-const snapshot = await getDocs(cookiesRef);
-setCookies(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-} catch (error) {
-console.error("Error al guardar cookie:", error);
-}
-};
+  // 🧁 Guardar o actualizar cookie
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-const handleEdit = (cookie) => {
-setNewCookie(cookie);
-setEditing(cookie.id);
-};
+    try {
+      // Convertir fechas a Timestamp si existen
+      const promoStartTimestamp = newCookie.promoStart
+        ? Timestamp.fromDate(new Date(newCookie.promoStart))
+        : null;
+      const promoEndTimestamp = newCookie.promoEnd
+        ? Timestamp.fromDate(new Date(newCookie.promoEnd))
+        : null;
 
-const handleDelete = async (id) => {
-await deleteDoc(doc(db, "cookies", id));
-setCookies(cookies.filter((c) => c.id !== id));
-};
+      const dataToSave = {
+        ...newCookie,
+        price: Number(newCookie.price),
+        stock: Number(newCookie.stock),
+        specialPrice: newCookie.specialPrice ? Number(newCookie.specialPrice) : null,
+        promoStart: promoStartTimestamp,
+        promoEnd: promoEndTimestamp,
+      };
+
+      if (editing) {
+        const ref = doc(db, "cookies", editing);
+        await updateDoc(ref, dataToSave);
+      } else {
+        await addDoc(cookiesRef, dataToSave);
+      }
+
+      // Reset
+      setNewCookie({
+        name: "",
+        description: "",
+        price: "",
+        stock: "",
+        imageUrl: "",
+      });
+      setEditing(null);
+
+      // Refrescar lista
+      const snapshot = await getDocs(cookiesRef);
+      setCookies(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    } catch (error) {
+      console.error("Error al guardar cookie:", error);
+    }
+  };
+
+  const handleEdit = (cookie) => {
+    // Convertir timestamps de vuelta a datetime-local friendly
+    const promoStart = cookie.promoStart?.seconds
+      ? new Date(cookie.promoStart.seconds * 1000).toISOString().slice(0, 16)
+      : cookie.promoStart || "";
+    const promoEnd = cookie.promoEnd?.seconds
+      ? new Date(cookie.promoEnd.seconds * 1000).toISOString().slice(0, 16)
+      : cookie.promoEnd || "";
+
+    setNewCookie({ ...cookie, promoStart, promoEnd });
+    setEditing(cookie.id);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, "cookies", id));
+    setCookies(cookies.filter((c) => c.id !== id));
+  };
 
 return ( <div className="max-w-2xl mx-auto mt-10 p-6 font-poppins rounded-lg shadow bg-amber-50"> <h2 className="text-2xl font-bold mb-4 text-center text-amber-900 font-poppins">
 Gestionar Cookies </h2>

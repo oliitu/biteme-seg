@@ -13,12 +13,6 @@ function FormularioResena() {
 
   const enviarResena = async (e) => {
     e.preventDefault();
-
-    if (!opinion.trim()) {
-      setMensaje("Por favor escribí una opinión.");
-      return;
-    }
-
     setEnviando(true);
 
     try {
@@ -67,7 +61,7 @@ function FormularioResena() {
           />
 
           <textarea
-            placeholder="Tu opinión"
+            placeholder="Tu opinión (opcional)"
             value={opinion}
             onChange={(e) => setOpinion(e.target.value)}
             className="w-full border border-gray-300 rounded px-3 py-2"

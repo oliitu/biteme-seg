@@ -53,7 +53,7 @@ export default function ModalPedido({
                   : "bg-white text-orange-950 border-[#deca98]"
               }`}
             >
-              Mercado Pago
+              Transferencia
             </button>
             <button
               onClick={() => setMetodoPago("efectivo")}

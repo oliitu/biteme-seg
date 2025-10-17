@@ -140,7 +140,7 @@ export default function Cart({ setMostrarModal, isStickyCart = false }) {
       </div>
 
       {mostrarCarrito && (
-        <div id="carrito" className="mt-0 absolute right-0 bg-[#fff8de] rounded shadow p-4 z-10 sm:w-auto overflow-y-auto max-h-[60vh] min-w-[200px]">
+        <div id="carrito" className="mt-0 absolute right-0 bg-[#fff8de] rounded shadow-md p-4 z-10 sm:w-auto overflow-y-auto max-h-[60vh] min-w-[200px]">
           {isEmpty ? (
             <p className="text-center">El carrito está vacío</p>
           ) : (
@@ -234,34 +234,139 @@ export default function Cart({ setMostrarModal, isStickyCart = false }) {
               </div>
 
               {/* MOBILE */}
-              <div className="flex flex-col gap-4 sm:hidden">
-                {cart.map((cookie) => {
-                  const { price, label, original } = computeItemDisplay(cookie);
-                  return (
-                    <div key={cookie.id} className="flex gap-3 border-b pb-3 border-yellow-900 items-center">
-                      <img src={cookie.imageUrl} alt={cookie.name} className="w-16 h-16 drop-shadow-md object-cover rounded" />
-                      <div className="text-orange-950 flex-grow">
-                        <h4 className="font-semibold">{cookie.name}</h4>
-                        <p>
-                          ${Number(price).toFixed(2)}
-                          {label && (
-                            <>
-                              <span className="line-through text-xs text-gray-500 ml-1">${Number(original).toFixed(2)}</span>
-                              <span className="text-xs text-green-700 ml-1">{label}</span>
-                            </>
-                          )}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <motion.button whileTap={{ scale: 0.95 }} onClick={() => decreaseQuantity(cookie.id)} className="px-2 bg-[#fcb9c6] rounded">−</motion.button>
-                          <span>{cookie.quantity}</span>
-                          <motion.button whileTap={{ scale: 0.95 }} onClick={() => increaseQuantity(cookie.id)} className="px-2 bg-[#fcb9c6] rounded">+</motion.button>
-                        </div>
-                      </div>
-                      <motion.button whileTap={{ scale: 0.95 }} onClick={() => removeFromCart(cookie.id)} className="text-red-600 text-2xl ml-2 self-center">X</motion.button>
-                    </div>
-                  );
-                })}
-              </div>
+<div className="flex  flex-col gap-4 sm:hidden">
+  {cart.map((cookie) => {
+    const { price, label, original } = computeItemDisplay(cookie);
+    return (
+      <div
+        key={cookie.id}
+        className="flex gap-3 border-b pb-3 border-yellow-900 items-center"
+      >
+        <img
+          src={cookie.imageUrl}
+          alt={cookie.name}
+          className="w-16 h-16 drop-shadow-md object-cover rounded"
+        />
+        <div className="text-orange-950 flex-grow">
+          <h4 className="font-semibold">{cookie.name}</h4>
+          <p>
+            ${Number(price).toFixed(2)}
+            {label && (
+              <>
+                <span className="line-through text-xs text-gray-500 ml-1">
+                  ${Number(original).toFixed(2)}
+                </span>
+                <span className="text-xs text-green-700 ml-1">{label}</span>
+              </>
+            )}
+          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => decreaseQuantity(cookie.id)}
+              className="px-2 bg-[#fcb9c6] rounded"
+            >
+              −
+            </motion.button>
+            <span>{cookie.quantity}</span>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => increaseQuantity(cookie.id)}
+              className="px-2 bg-[#fcb9c6] rounded"
+            >
+              +
+            </motion.button>
+          </div>
+        </div>
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => removeFromCart(cookie.id)}
+          className="text-red-600 text-2xl ml-2 self-center"
+        >
+          X
+        </motion.button>
+      </div>
+    );
+  })}
+
+  {/* CÓDIGO DE DESCUENTO */}
+  <div className="mt-2 border-t border-yellow-900 pt-2 space-y-2 text-orange-950">
+    <label className="text-sm font-poppins block">Código de Descuento:</label>
+    <div className="flex space-x-2">
+      <input
+        type="text"
+        placeholder=""
+        value={inputCode}
+        onChange={(e) => setInputCode(e.target.value)}
+        disabled={discountApplied}
+        className="flex-grow p-1 border border-yellow-900 rounded bg-amber-50 disabled:bg-[#fcb9c6] text-sm"
+      />
+      {!discountApplied ? (
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleApplyDiscount}
+          className="px-3 py-1 bg-[#fcb9c6] text-orange-950 font-semibold rounded hover:bg-[#de8a9b] text-sm"
+        >
+          Aplicar
+        </motion.button>
+      ) : (
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={handleRemoveDiscount}
+          className="px-3 py-1 bg-red-400 text-white font-semibold rounded hover:bg-red-500 text-sm"
+        >
+          Quitar
+        </motion.button>
+      )}
+    </div>
+    {message && (
+      <p
+        className={`mt-1 text-xs font-semibold ${
+          discountApplied ? "text-green-600" : "text-red-600"
+        }`}
+      >
+        {message}
+      </p>
+    )}
+  </div>
+
+  {/* TOTALES */}
+  <div className="border-t border-yellow-900 pt-2 space-y-1 text-orange-950">
+    <div className="flex justify-between font-semibold">
+      <span>Subtotal:</span>
+      <span>${Number(cartSubtotal || 0).toFixed(2)}</span>
+    </div>
+    {discountApplied && (
+      <div className="flex justify-between font-semibold text-green-700">
+        <span>Descuento:</span>
+        <span>-${Number(discountAmount || 0).toFixed(2)}</span>
+      </div>
+    )}
+    <div className="flex justify-between font-bold text-lg text-yellow-900 border-t border-yellow-900 pt-1">
+      <span>Total a pagar:</span>
+      <span>${Number(cartTotal || 0).toFixed(2)}</span>
+    </div>
+  </div>
+
+  {/* BOTONES */}
+  <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
+    <motion.button
+      whileTap={{ scale: 0.95 }}
+      onClick={clearCart}
+      className="font-poppins bg-[#fcb9c6] hover:bg-[#de8a9b] px-3 py-2 rounded-lg text-sm w-full sm:w-auto"
+    >
+      Vaciar Carrito
+    </motion.button>
+    <motion.button
+      onClick={() => setMostrarModal(true)}
+      whileTap={{ scale: 0.95 }}
+      className="text-white bg-[#6e3712] font-poppins hover:bg-yellow-950 rounded text-base px-5 py-2.5 w-full sm:w-auto text-center"
+    >
+      Pagar
+    </motion.button>
+  </div>
+</div>
+
             </>
           )}
         </div>
