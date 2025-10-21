@@ -78,9 +78,9 @@ function Navbar() {
           <Link to="/productos" className="sm:text-base text-sm">
             Comprar
           </Link>
-          <Link to="/admin" className="sm:text-base text-sm">
+          {/* <Link to="/admin" className="sm:text-base text-sm">
             Admin
-          </Link>
+          </Link> */}
         </div>
       </nav>
       <div className="flex flex-col ">
