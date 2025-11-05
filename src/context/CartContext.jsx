@@ -5,7 +5,7 @@ import { db } from "../firebase/config"; // Ajustá la ruta según tu proyecto
 
 // Definición de las constantes del descuento
 const DISCOUNT_CODE = "EXPODESCUENTOS";
-const DISCOUNT_RATE = 0.25; // 25%
+const DISCOUNT_RATE = 0.2; // 25%
 
 export const CartContext = createContext();
 

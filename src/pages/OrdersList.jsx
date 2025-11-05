@@ -193,7 +193,7 @@ const resumenRef = collection(db, "resumenesDiarios");
                 <ul className="mb-3">
                   {pedido.carrito.map((item, index) => (
                     <li key={index} className="text-gray-800 mb-1">
-                      🍪 <strong>{item.name}</strong> — {item.quantity} x ${item.price}
+                      🍪 <strong>{item.name}</strong> — {item.quantity}
                     </li>
                   ))}
                 </ul>
