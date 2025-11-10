@@ -29,7 +29,22 @@ export default function PromoBar({ promo }) {
       const minutos = Math.floor((diff / (1000 * 60)) % 60);
       const segundos = Math.floor((diff / 1000) % 60);
 
-      setTiempoRestante(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
+      if (dias<1) {
+        setTiempoRestante(`${horas}h ${minutos}m ${segundos}s`);
+        
+        if (horas<1){
+          setTiempoRestante(`${minutos}m ${segundos}s`);
+
+          if (minutos<1){
+            setTiempoRestante(`${segundos}s`);
+          }
+        }
+      }
+      if (dias>0){
+        setTiempoRestante(`${dias}d ${horas}h ${minutos}m ${segundos}s`);
+        return;
+      }
+      
     };
 
     calcularTiempo();

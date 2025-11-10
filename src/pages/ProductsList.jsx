@@ -71,13 +71,13 @@ export default function ProductsList() {
       .map(item => `- ${item.name} x${item.quantity} = $${(item.quantity * item.price).toFixed(2)}`)
       .join('\n');
 
-    const mensaje = `Hola mamuuu, soy ${clienteNombre}. Te envío el comprobante de mi pedido:\n${lineaGalletas}\nTotal: $${cartTotal.toFixed(2)}`;
+    const mensaje = `Holaa, soy ${clienteNombre}. Te envío el comprobante de mi pedido:\n${lineaGalletas}\nTotal: $${cartTotal.toFixed(2)}`;
 
     const numero = "5493541396868";
     return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
   };
 
-  // Función para confirmar pedido
+  // fc onfimar pedido
   const confirmarPedido = async () => {
     if (!cart.length || isNaN(cartTotal)) {
       setToast("Error: carrito vacío o total inválido");
@@ -100,7 +100,6 @@ export default function ProductsList() {
       carrito: cart.map(item => ({
         id: item.id,
         name: item.name,
-        price: item.price,
         quantity: item.quantity
       })),
       total: cartTotal,

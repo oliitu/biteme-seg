@@ -11,17 +11,12 @@ function FormularioResena({ onClose }) {
 
   const enviarResena = async (e) => {
     e.preventDefault();
-    if (!opinion.trim()) {
-      setMensaje("Por favor escribí una opinión.");
-      return;
-    }
-
     setEnviando(true);
     try {
       await addDoc(collection(db, "resenas"), {
         name: name.trim() || "Cliente",
         opinion: opinion.trim(),
-        rating,
+       rating, // ⭐ guarda la puntuación
         fecha: Timestamp.now(),
       });
 
@@ -45,7 +40,7 @@ function FormularioResena({ onClose }) {
       className="bg-amber-100 p-4 rounded-xl space-y-4 w-full"
     >
       <h2 className="text-2xl font-bold text-orange-950">🎉 ¡Listo! 🎉</h2>
-      <h3 className="text-xl font-bold text-orange-950">Dejá tu reseña porfi</h3>
+      <h3 className="text-xl font-bold text-orange-950">Si querés, podes dejar tu reseña</h3>
       <input
         type="text"
         placeholder="Tu nombre (opcional)"
@@ -54,7 +49,7 @@ function FormularioResena({ onClose }) {
         className="w-full border border-gray-300 rounded px-3 py-2"
       />
       <textarea
-        placeholder="Tu opinión"
+        placeholder="Tu opinión (opcional)"
         value={opinion}
         onChange={(e) => setOpinion(e.target.value)}
         className="w-full border border-gray-300 rounded px-3 py-2"

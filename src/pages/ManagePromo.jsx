@@ -28,7 +28,6 @@ export default function ManagePromo() {
           setMotivo(promo.motivo || "");
           setDescuento(promo.descuento || 0);
 
-          // Convertir timestamps a formato datetime-local (YYYY-MM-DDTHH:mm)
           if (promo.inicio?.seconds && promo.fin?.seconds) {
             const inicioDate = new Date(promo.inicio.seconds * 1000);
             const finDate = new Date(promo.fin.seconds * 1000);
@@ -51,7 +50,6 @@ export default function ManagePromo() {
     e.preventDefault();
 
     try {
-      // Convertir los valores de fecha del input a Timestamp
       const inicioTimestamp = Timestamp.fromDate(new Date(inicio));
       const finTimestamp = Timestamp.fromDate(new Date(fin));
 
@@ -65,10 +63,8 @@ export default function ManagePromo() {
       };
 
       await setDoc(doc(db, "promos", "global"), promoData);
-      alert("✅ Promoción global guardada correctamente");
     } catch (error) {
       console.error("Error al guardar promoción global:", error);
-      alert("❌ Error al guardar la promoción");
     }
   };
 
